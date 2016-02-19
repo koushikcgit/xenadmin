@@ -220,6 +220,7 @@ namespace XenAdmin.Dialogs.VMPolicies
                 
                 if (!VMGroup<T>.isVMPolicyVMPP)
                 {
+                    policy.PolicyAlerts.Clear();
                     List<XenAPI.Message> processedMessages = new List<XenAPI.Message>();
                     /*for VMSS: Populate the alerts from Messages by filtering out the alerts for this schedule
                      This is not required in VMPP as the VMPP record itself has the recentAlerts */
@@ -227,14 +228,7 @@ namespace XenAdmin.Dialogs.VMPolicies
                     {
                         if (message.obj_uuid == policy.uuid)
                         {
-                            if (message.Type == XenAPI.Message.MessageType.VMSS_SNAPSHOT_SUCCEEDED)
-                            {
-                                policy.PolicyAlerts.Add(new PolicyAlert(Pool.Connection, message.body));
-                            }
-                            else
-                            {
-                                policy.PolicyAlerts.Add(new PolicyAlert(message.name, message.timestamp));
-                            }
+                            policy.PolicyAlerts.Add(new PolicyAlert(message.priority, message.name, message.timestamp));
                             processedMessages.Add(message);
                         }
                     }
